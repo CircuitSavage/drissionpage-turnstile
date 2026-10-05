@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "drissionpage-turnstile"
+version = "0.1.0"
+description = "Solve Cloudflare Turnstile inside a DrissionPage browser."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "CircuitSavage" }]
+keywords = [
+    "drissionpage", "cloudflare", "turnstile", "captcha", "solver",
+    "bot", "automation", "scraping", "bypass", "chromium",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Topic :: Internet :: WWW/HTTP :: Browsers",
+]
+dependencies = ["httpx>=0.24"]
+
+[project.urls]
+Homepage = "https://github.com/CircuitSavage/drissionpage-turnstile"
+Solver = "https://peak.fo"
+
+[tool.hatch.build.targets.wheel]
+packages = ["drissionpage_turnstile"]
