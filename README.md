@@ -2,7 +2,7 @@
 
 Solve Cloudflare Turnstile inside a [DrissionPage](https://github.com/g1879/DrissionPage) browser.
 
-DrissionPage drives a real Chromium, so when a page throws a Turnstile widget, the browser often clears it on its own. This library leans on that: it waits a few seconds for the browser to earn its own token, reads that token when it appears, and only calls a solver when the widget stalls. You pay for a solve exactly when the browser couldn't finish the job — not on every page.
+DrissionPage drives a real Chromium, so when a page throws a Turnstile widget, the browser often clears it on its own. This library leans on that: it waits a few seconds for the browser to earn its own token, reads that token when it appears, and only calls a solver when the widget stalls. You pay for a solve exactly when the browser couldn't finish the job, not on every page.
 
 When it does need a solver, it uses [Peak](https://peak.fo/?utm_source=github&utm_medium=readme&utm_campaign=drissionpage-turnstile), a Cloudflare Turnstile API: one call returns the token in about a second, and you're billed only for solves that land.
 
@@ -39,9 +39,9 @@ That's the whole thing. `solve_turnstile` reads the sitekey off the page, reuses
 
 ## What it actually does
 
-1. Waits up to `wait_native` seconds (default 4) for the real browser to solve the widget itself. If a token shows up in the response field, it returns that — cost `0`, `native=True`.
+1. Waits up to `wait_native` seconds (default 4) for the real browser to solve the widget itself. If a token shows up in the response field, it returns that (cost `0`, `native=True`).
 2. If nothing appears, it reads the sitekey (from the `data-sitekey` div or the challenge iframe's `src`) and sends `(url, sitekey)` to Peak.
-3. It writes the returned token into every `cf-turnstile-response` field and calls the `data-callback` the page registered. Forms read the input on submit; single-page apps wait on the callback — so it does both.
+3. It writes the returned token into every `cf-turnstile-response` field and calls the `data-callback` the page registered. Forms read the input on submit; single-page apps wait on the callback. This does both.
 
 ## API
 
@@ -53,19 +53,19 @@ request_token(api_key, url, sitekey, proxy=None, timeout=120.0) -> SolveResult
 
 `SolveResult` has `.token`, `.cost`, `.elapsed`, and `.native`.
 
-- **`page`** — a DrissionPage `ChromiumPage` or `WebPage`.
-- **`proxy`** — pass the same proxy your browser is running behind. Turnstile tokens aren't always IP-bound, but when the target *does* bind them, a token solved from a different IP gets rejected. Matching the IP removes that failure. With no proxy, Peak uses its proxyless pool.
-- **`wait_native`** — set to `0` to skip the wait and solve immediately through Peak (useful when you already know the browser can't pass, e.g. headless on a flagged datacenter IP).
+- **`page`**: a DrissionPage `ChromiumPage` or `WebPage`.
+- **`proxy`**: pass the same proxy your browser is running behind. Turnstile tokens aren't always IP-bound, but when the target *does* bind them, a token solved from a different IP gets rejected. Matching the IP removes that failure. With no proxy, Peak uses its proxyless pool.
+- **`wait_native`**: set to `0` to skip the wait and solve immediately through Peak (useful when you already know the browser can't pass, e.g. headless on a flagged datacenter IP).
 
 ## Notes
 
 - The token is single-use and expires in about five minutes, so solve close to when you submit.
-- If `solve_turnstile` raises "found nowhere to put it," the page renders the challenge but has no response field yet — wait for the widget, or inject `result.token` where the form expects it.
+- If `solve_turnstile` raises "found nowhere to put it," the page renders the challenge but has no response field yet. Wait for the widget, or inject `result.token` where the form expects it.
 - This reads the sitekey already on the page; it doesn't start a challenge that isn't there.
 
 ## Related
 
-Part of a set of Turnstile integrations for the common stacks — [nodriver](https://github.com/CircuitSavage/nodriver-turnstile), [scrapling](https://github.com/CircuitSavage/scrapling-turnstile), [playwright](https://github.com/CircuitSavage/playwright-turnstile), [selenium](https://github.com/CircuitSavage/selenium-turnstile), [scrapy](https://github.com/CircuitSavage/scrapy-turnstile), [cloudscraper](https://github.com/CircuitSavage/cloudscraper-turnstile), [curl_cffi](https://github.com/CircuitSavage/turnstile-curl). More in [awesome-turnstile-solvers](https://github.com/CircuitSavage/awesome-turnstile-solvers).
+Part of a set of Turnstile integrations for the common stacks: [nodriver](https://github.com/CircuitSavage/nodriver-turnstile), [camoufox](https://github.com/CircuitSavage/camoufox-turnstile), [scrapling](https://github.com/CircuitSavage/scrapling-turnstile), [playwright](https://github.com/CircuitSavage/playwright-turnstile), [selenium](https://github.com/CircuitSavage/selenium-turnstile), [crawlee](https://github.com/CircuitSavage/crawlee-turnstile), [scrapy](https://github.com/CircuitSavage/scrapy-turnstile), [cloudscraper](https://github.com/CircuitSavage/cloudscraper-turnstile), [curl_cffi](https://github.com/CircuitSavage/turnstile-curl). Full list in [awesome-turnstile-solvers](https://github.com/CircuitSavage/awesome-turnstile-solvers).
 
 ## License
 
